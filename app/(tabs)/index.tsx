@@ -1,8 +1,12 @@
+// Update your HomeScreen
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router'; // Import useRouter for navigation
 
 export default function HomeScreen() {
+  const router = useRouter(); // Initialize router
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -39,7 +43,7 @@ export default function HomeScreen() {
         <View style={styles.moduleList}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             {/* Module Card 1 */}
-            <TouchableOpacity style={styles.moduleCard}>
+            <TouchableOpacity style={styles.moduleCard} onPress={() => router.push('./ArticleLinksScreen')}>
               <Text style={styles.moduleTitle}>Overview (What is cyberbullying?)</Text>
               <Text style={styles.moduleLessons}>4 Lessons</Text>
               <View style={styles.progressBar}>
@@ -49,7 +53,7 @@ export default function HomeScreen() {
             </TouchableOpacity>
 
             {/* Module Card 2 */}
-            <TouchableOpacity style={styles.moduleCard}>
+            <TouchableOpacity style={styles.moduleCard} onPress={() => router.push('./ArticleLinksScreen')}>
               <Text style={styles.moduleTitle}>Why Cyberbullying Matters</Text>
               <Text style={styles.moduleLessons}>2 Lessons</Text>
               <View style={styles.progressBar}>
@@ -58,7 +62,7 @@ export default function HomeScreen() {
               <Text style={styles.progressText}>0%</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.moduleCard}>
+            <TouchableOpacity style={styles.moduleCard} onPress={() => router.push('./ArticleLinksScreen')}>
               <Text style={styles.moduleTitle}>Phishing</Text>
               <Text style={styles.moduleLessons}>3 Lessons</Text>
               <View style={styles.progressBar}>
@@ -74,6 +78,9 @@ export default function HomeScreen() {
     </SafeAreaView>
   );
 }
+
+// ... (rest of your styles)
+
 
 // Styles
 const styles = StyleSheet.create({
