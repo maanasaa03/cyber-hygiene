@@ -1,17 +1,44 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function HomeScreen() {
   const router = useRouter(); // Initialize router
   const [showAllModules, setShowAllModules] = useState(false); // State to toggle module view
 
+  const [lastAccessedModule, setLastAccessedModule] = useState<string | null>(null);
+
+  // Function to get the last accessed module from AsyncStorage
+  const getLastAccessedModule = async () => {
+    try {
+      const module = await AsyncStorage.getItem('lastAccessedModule');
+      if (module !== null) {
+        setLastAccessedModule(module); // Set the last accessed module in state
+      }
+    } catch (e) {
+      console.error('Failed to fetch the last accessed module:', e);
+    }
+  };
+
+  // Fetch the last accessed module when the HomeScreen is loaded
+  useEffect(() => {
+    getLastAccessedModule();
+  }, []);
+
   // Handle the module press to navigate to the ArticleLinksScreen
-  const handleModulePress = (module: string) => {
+  const handleModulePress = async (module: string) => {
+    try {
+      await AsyncStorage.setItem('lastAccessedModule', module);
+    } catch (e) {
+      console.error('Failed to save the last accessed module:', e);
+    }
+
+    // Navigate to the article screen
     router.push({
       pathname: './ArticleLinksScreen',
-      params: { module }, // Pass the selected module as a parameter
+      params: { module },
     });
   };
 
@@ -31,23 +58,27 @@ export default function HomeScreen() {
         {/* Greeting Section */}
         <View style={styles.greetingContainer}>
           <Text style={styles.greetingText}>Hello there, 👋</Text>
-          <Text style={styles.username}>nat.</Text>
+          <Text style={styles.username}>User.</Text>
         </View>
 
         {/* Quote of the Day Section */}
         <View style={styles.quoteContainer}>
           <Text style={styles.quoteText}>
-            "Cyberbullying is the biggest online concern, already affecting up to 35% of all children."
+          "Cyber hygiene is not just a set of best practices; it’s a mindset that empowers individuals and organizations to protect their digital lives."
           </Text>
         </View>
 
         {/* Where were we? Section */}
         <View style={styles.lessonContainer}>
           <Text style={styles.sectionTitle}>Where were we?</Text>
-          <TouchableOpacity style={styles.lessonCard}>
-            <Text style={styles.lessonTitle}>Overview (What is cyberbullying?)</Text>
-            <Text style={styles.lessonProgress}>Resume</Text>
-          </TouchableOpacity>
+          {lastAccessedModule ? (
+            <TouchableOpacity style={styles.lessonCard} onPress={() => handleModulePress(lastAccessedModule)}>
+              <Text style={styles.lessonTitle}>{lastAccessedModule}</Text>
+              <Text style={styles.lessonProgress}>Resume</Text>
+            </TouchableOpacity>
+          ) : (
+            <Text style={styles.lessonTitle}>No module accessed yet</Text>
+          )}
         </View>
 
         {/* Modules Section */}
