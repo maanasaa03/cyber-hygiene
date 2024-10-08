@@ -1,11 +1,43 @@
-// Update your HomeScreen
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router'; // Import useRouter for navigation
+import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
-  const router = useRouter(); // Initialize router
+  const router = useRouter();
+
+  // Mock module data with progress information (in percentages)
+  const modules = [
+    { id: 'overview', title: 'Overview (What is cyberbullying?)', lessons: 4, progress: 20 },
+    { id: 'whyItMatters', title: 'Why Cyberbullying Matters', lessons: 2, progress: 50 },
+    { id: 'phishing', title: 'Phishing', lessons: 3, progress: 75 },
+  ];
+
+  const handleModulePress = (module: string) => {
+    router.push({
+      pathname: './ArticleLinksScreen',
+      params: { module }, // Pass the selected module as a parameter
+    });
+  };
+
+  const renderModules = () => {
+    return modules.map((module) => (
+      <TouchableOpacity
+        key={module.id}
+        style={styles.moduleCard}
+        onPress={() => handleModulePress(module.id)} // Call the function with module name
+      >
+        <Text style={styles.moduleTitle}>{module.title}</Text>
+        <Text style={styles.moduleLessons}>{module.lessons} Lessons</Text>
+        
+        {/* Dynamic progress bar */}
+        <View style={styles.progressBar}>
+          <View style={[styles.progressFill, { width: `${module.progress}%` }]} />
+        </View>
+        <Text style={styles.progressText}>{module.progress}% Completed</Text>
+      </TouchableOpacity>
+    ));
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -42,45 +74,14 @@ export default function HomeScreen() {
 
         <View style={styles.moduleList}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {/* Module Card 1 */}
-            <TouchableOpacity style={styles.moduleCard} onPress={() => router.push('./ArticleLinksScreen')}>
-              <Text style={styles.moduleTitle}>Overview (What is cyberbullying?)</Text>
-              <Text style={styles.moduleLessons}>4 Lessons</Text>
-              <View style={styles.progressBar}>
-                <View style={styles.progressFill} />
-              </View>
-              <Text style={styles.progressText}>0%</Text>
-            </TouchableOpacity>
-
-            {/* Module Card 2 */}
-            <TouchableOpacity style={styles.moduleCard} onPress={() => router.push('./ArticleLinksScreen')}>
-              <Text style={styles.moduleTitle}>Why Cyberbullying Matters</Text>
-              <Text style={styles.moduleLessons}>2 Lessons</Text>
-              <View style={styles.progressBar}>
-                <View style={styles.progressFill} />
-              </View>
-              <Text style={styles.progressText}>0%</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.moduleCard} onPress={() => router.push('./ArticleLinksScreen')}>
-              <Text style={styles.moduleTitle}>Phishing</Text>
-              <Text style={styles.moduleLessons}>3 Lessons</Text>
-              <View style={styles.progressBar}>
-                <View style={styles.progressFill} />
-              </View>
-              <Text style={styles.progressText}>0%</Text>
-            </TouchableOpacity>
-
-            {/* Add more module cards as needed */}
+            {/* Render modules dynamically */}
+            {renderModules()}
           </ScrollView>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-// ... (rest of your styles)
-
 
 // Styles
 const styles = StyleSheet.create({
@@ -176,7 +177,6 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
-    width: '0%', // Update this value dynamically based on progress
     backgroundColor: '#333',
   },
   progressText: {
@@ -185,4 +185,6 @@ const styles = StyleSheet.create({
     marginTop: 5,
   },
 });
+
+
 
