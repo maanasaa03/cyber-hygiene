@@ -1,18 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 export default function HomeScreen() {
-  const router = useRouter();
+  const router = useRouter(); // Initialize router
+  const [showAllModules, setShowAllModules] = useState(false); // State to toggle module view
 
-  // Mock module data with progress information (in percentages)
-  const modules = [
-    { id: 'overview', title: 'Overview (What is cyberbullying?)', lessons: 4, progress: 20 },
-    { id: 'whyItMatters', title: 'Why Cyberbullying Matters', lessons: 2, progress: 50 },
-    { id: 'phishing', title: 'Phishing', lessons: 3, progress: 75 },
-  ];
-
+  // Handle the module press to navigate to the ArticleLinksScreen
   const handleModulePress = (module: string) => {
     router.push({
       pathname: './ArticleLinksScreen',
@@ -20,24 +15,15 @@ export default function HomeScreen() {
     });
   };
 
-  const renderModules = () => {
-    return modules.map((module) => (
-      <TouchableOpacity
-        key={module.id}
-        style={styles.moduleCard}
-        onPress={() => handleModulePress(module.id)} // Call the function with module name
-      >
-        <Text style={styles.moduleTitle}>{module.title}</Text>
-        <Text style={styles.moduleLessons}>{module.lessons} Lessons</Text>
-        
-        {/* Dynamic progress bar */}
-        <View style={styles.progressBar}>
-          <View style={[styles.progressFill, { width: `${module.progress}%` }]} />
-        </View>
-        <Text style={styles.progressText}>{module.progress}% Completed</Text>
-      </TouchableOpacity>
-    ));
-  };
+  // Data for the modules
+  const modules = [
+    { title: 'Introduction to Cyber Hygiene', lessons: '3 Lessons', moduleKey: 'introtocyber' },
+    { title: 'Safe Use of Public Wi-Fi', lessons: '2 Lessons', moduleKey: 'publicwifi' },
+    { title: 'Phishing', lessons: '4 Lessons', moduleKey: 'phishing' },
+    { title: 'Secure Browsing', lessons: '3 Lessons', moduleKey: 'securebrowsing' },
+    { title: 'Authentication and Access Control', lessons: '3 Lessons', moduleKey: 'authandaccess' },
+    // Add more modules here...
+  ];
 
   return (
     <SafeAreaView style={styles.container}>
@@ -67,17 +53,45 @@ export default function HomeScreen() {
         {/* Modules Section */}
         <View style={styles.modulesHeader}>
           <Text style={styles.sectionTitle}>Modules</Text>
-          <TouchableOpacity>
-            <Text style={styles.seeAll}>See All</Text>
+          <TouchableOpacity onPress={() => setShowAllModules(!showAllModules)}>
+            <Text style={styles.seeAll}>{showAllModules ? 'Show Less' : 'See All'}</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.moduleList}>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-            {/* Render modules dynamically */}
-            {renderModules()}
-          </ScrollView>
-        </View>
+        {/* Display Modules */}
+        {showAllModules ? (
+          <View style={styles.gridContainer}>
+            {modules.map((module, index) => (
+              <TouchableOpacity
+                key={index}
+                style={styles.gridModuleCard}
+                onPress={() => handleModulePress(module.moduleKey)}
+              >
+                <Text style={styles.moduleTitle}>{module.title}</Text>
+                <Text style={styles.moduleLessons}>{module.lessons}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        ) : (
+          <View style={styles.moduleList}>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {modules.slice(0, 3).map((module, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.moduleCard}
+                  onPress={() => handleModulePress(module.moduleKey)}
+                >
+                  <Text style={styles.moduleTitle}>{module.title}</Text>
+                  <Text style={styles.moduleLessons}>{module.lessons}</Text>
+                  <View style={styles.progressBar}>
+                    <View style={styles.progressFill} />
+                  </View>
+                  <Text style={styles.progressText}>0%</Text>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -105,7 +119,7 @@ const styles = StyleSheet.create({
   quoteContainer: {
     marginTop: 20,
     padding: 20,
-    backgroundColor: '#B5E48C', // light green background
+    backgroundColor: '#B5E48C',
     borderRadius: 10,
   },
   quoteText: {
@@ -122,7 +136,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   lessonCard: {
-    backgroundColor: '#2A9D8F', // blue card background
+    backgroundColor: '#2A9D8F',
     padding: 20,
     borderRadius: 10,
     flexDirection: 'row',
@@ -152,7 +166,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   moduleCard: {
-    backgroundColor: '#90BE6D', // green gradient background
+    backgroundColor: '#90BE6D',
     padding: 20,
     borderRadius: 10,
     width: 180,
@@ -177,12 +191,27 @@ const styles = StyleSheet.create({
   },
   progressFill: {
     height: '100%',
+    width: '0%', // Update this value dynamically based on progress
     backgroundColor: '#333',
   },
   progressText: {
     fontSize: 12,
     color: '#FFF',
     marginTop: 5,
+  },
+  // Grid View Styles
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    marginTop: 10,
+  },
+  gridModuleCard: {
+    backgroundColor: '#90BE6D',
+    padding: 20,
+    borderRadius: 10,
+    width: '48%', // Two columns in grid
+    marginBottom: 15,
   },
 });
 
