@@ -132,7 +132,7 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8F8F8',
+    backgroundColor: '#E7DDFF',
     padding: 20,
   },
   greetingContainer: {
@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   quoteContainer: {
     marginTop: 20,
     padding: 20,
-    backgroundColor: '#B5E48C',
+    backgroundColor: '#CC6CE7',
     borderRadius: 10,
   },
   quoteText: {
@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
   },
   lessonContainer: {
     marginTop: 30,
+    color:'#8B4CE4',
   },
   sectionTitle: {
     fontSize: 18,
@@ -195,6 +196,7 @@ const styles = StyleSheet.create({
   },
   moduleList: {
     marginTop: 10,
+    color:'#CC6CE7'
   },
   moduleCard: {
     backgroundColor: '#90BE6D',
@@ -238,7 +240,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   gridModuleCard: {
-    backgroundColor: '#90BE6D',
+    backgroundColor: '#CB77E3',
     padding: 20,
     borderRadius: 10,
     width: '48%', // Two columns in grid

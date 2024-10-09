@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, Button, View, Text } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, View, Text } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 // Function to check the password strength
 function checkPasswordStrength(password: string) {
@@ -83,76 +84,100 @@ export default function TabTwoScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Password Strength Checker & Generator</Text>
-      
-      {/* Password Input */}
-      <TextInput
-        style={styles.input}
-        placeholder="Enter password"
-        value={password}
-        onChangeText={handlePasswordChange}
-        secureTextEntry={true}
-        placeholderTextColor="#aaa"
-      />
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.heading}>Tools</Text>
 
-      {/* Display Password Strength with dynamic color */}
-      <Text style={[styles.strength, { color: getStrengthColor() }]}>
-        Strength: {passwordStrength}
-      </Text>
+      {/* Password Strength Checker Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Password Strength Checker</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Enter password"
+          value={password}
+          onChangeText={handlePasswordChange}
+          secureTextEntry={true}
+          placeholderTextColor="#aaa"
+        />
+        <Text style={[styles.strength, { color: getStrengthColor() }]}>
+          Strength: {passwordStrength}
+        </Text>
+      </View>
 
-      {/* Button to Generate Random Password */}
-      <Button title="Generate Password" onPress={handleGeneratePassword} />
-
-      {/* Display Generated Password */}
-      {generatedPassword ? (
-        <View>
-          <Text style={styles.generatedPasswordTitle}>Generated Password:</Text>
-          <Text style={styles.generatedPassword}>{generatedPassword}</Text>
-        </View>
-      ) : null}
-    </View>
+      {/* Password Generator Section */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Password Generator</Text>
+        <TouchableOpacity style={styles.button} onPress={handleGeneratePassword}>
+          <Text style={styles.buttonText}>Generate Password</Text>
+        </TouchableOpacity>
+        {generatedPassword ? (
+          <View>
+            <Text style={styles.generatedPasswordTitle}>Generated Password:</Text>
+            <Text style={styles.generatedPassword}>{generatedPassword}</Text>
+          </View>
+        ) : null}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#000', // Black background
+    backgroundColor: '#E7DDFF',
   },
-  title: {
-    fontSize: 20,
+  heading: {
+    fontSize: 28,
     fontWeight: 'bold',
+    color: '#333',
+    marginBottom: 30,
+  },
+  section: {
+    marginBottom: 40,
+    backgroundColor: '#E9ECEF', // Light background color for the section
+    padding: 20,
+    borderRadius: 10,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#2A9D8F', // Section title color
     marginBottom: 20,
-    color: 'white', // Title color on black background
   },
   input: {
-    height: 40,
+    height: 50,
     borderColor: 'gray',
     borderWidth: 1,
-    width: '100%',
-    paddingHorizontal: 8,
-    marginBottom: 20,
-    color: 'white', // Input text color
-    backgroundColor: '#333', // Darker input background
+    paddingHorizontal: 10,
+    borderRadius: 10,
+    backgroundColor: '#FFF',
+    marginBottom: 10,
   },
   strength: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 20,
+  },
+  button: {
+    backgroundColor: '#2A9D8F',
+    paddingVertical: 12,
+    paddingHorizontal: 25,
+    borderRadius: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    fontSize: 16,
+    color: '#FFF',
+    fontWeight: 'bold',
   },
   generatedPasswordTitle: {
     fontSize: 16,
     marginTop: 20,
-    color: 'white',
+    color: '#333',
   },
   generatedPassword: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: 'cyan',
+    color: '#2A9D8F',
     marginTop: 10,
     textAlign: 'center',
   },
