@@ -35,50 +35,50 @@ export default function ArticleLinksScreen() {
     ],
   };
 
-  // Ensure `module` is a valid string, not an array or undefined
-  const moduleKey = Array.isArray(module) ? module[0] : module;
-
-  // Get related articles based on the module key
+  const moduleKey = module && Array.isArray(module) ? module[0] : module || "defaultModule"; 
   const relatedArticles = moduleKey && articles[moduleKey] ? articles[moduleKey] : [];
 
-  // Function to handle article link press
   const handleLinkPress = async (url: string) => {
-    // Check if the link can be opened
     const supported = await Linking.canOpenURL(url);
-
     if (supported) {
-      // Open the link in the default browser
       await Linking.openURL(url);
     } else {
       Alert.alert(`Can't open this URL: ${url}`);
     }
   };
 
+  if (relatedArticles.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.errorText}>No articles available for this module.</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backButtonText}>Back to Home</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
-      {/* Module Title */}
+      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+        <Text style={styles.backButtonText}>Back to Home</Text>
+      </TouchableOpacity>
+
       <Text style={styles.moduleTitle}>Learn More:</Text>
 
-      {/* Display Related Articles */}
       {relatedArticles.map((article, index) => (
         <TouchableOpacity
           key={index}
           style={styles.articleCard}
-          onPress={() => handleLinkPress(article.link)} // Open link on press
+          onPress={() => handleLinkPress(article.link)} 
         >
           <Text style={styles.articleTitle}>{article.title}</Text>
         </TouchableOpacity>
       ))}
-
-      {/* Back Button */}
-      <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-        <Text style={styles.backButtonText}>Back to Home</Text>
-      </TouchableOpacity>
     </View>
   );
 }
 
-// Styles for the ArticleLinksScreen
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -101,17 +101,24 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   backButton: {
-    marginTop: 20,
     padding: 15,
     backgroundColor: '#2A9D8F',
     borderRadius: 10,
     alignItems: 'center',
+    marginBottom: 20,
   },
   backButtonText: {
     fontSize: 16,
     color: '#FFF',
   },
+  errorText: {
+    fontSize: 18,
+    color: '#FF0000',
+    textAlign: 'center',
+    marginBottom: 20,
+  },
 });
+
 
 
 

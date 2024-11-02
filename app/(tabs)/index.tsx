@@ -35,10 +35,10 @@ export default function HomeScreen() {
       console.error('Failed to save the last accessed module:', e);
     }
 
-    // Navigate to the article screen
+    // Navigate to the ArticleLinksScreen (ensure it matches the screen name in App.tsx)
     router.push({
-      pathname: './ArticleLinksScreen',
-      params: { module },
+      pathname: '/ArticleLinksScreen',  // Removed './' and ensured screen name matches App.tsx
+      params: { module },              // Passing module as a parameter
     });
   };
 
@@ -123,12 +123,20 @@ export default function HomeScreen() {
             </ScrollView>
           </View>
         )}
+
+      <TouchableOpacity 
+        style={styles.quizButton} 
+        onPress={() => router.push('./QuizScreen')} // Navigate to QuizScreen
+      >
+        <Text style={styles.quizButtonText}>Start Quiz</Text>
+      </TouchableOpacity>
+
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-// Styles
+// Styles remain unchanged
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -246,7 +254,16 @@ const styles = StyleSheet.create({
     width: '48%', // Two columns in grid
     marginBottom: 15,
   },
+  quizButton: {
+    backgroundColor: '#CC6CE7',
+    padding: 15,
+    borderRadius: 10,
+    alignItems: 'center',
+    marginTop: 30,
+  },
+  quizButtonText: {
+    color: '#FFF',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
 });
-
-
-
