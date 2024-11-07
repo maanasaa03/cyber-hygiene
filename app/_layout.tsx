@@ -1,12 +1,11 @@
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { useFonts } from 'expo-font';
-import { router, Stack } from 'expo-router';
+import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useColorScheme } from '@/components/useColorScheme';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { TouchableOpacity } from 'react-native';
+import { AuthProvider, useAuth } from './context/AuthContext'; // Import AuthProvider and useAuth
 
 export {
   ErrorBoundary,
@@ -16,6 +15,7 @@ export const unstable_settings = {
   initialRouteName: 'LoginScreen',
 };
 
+
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -23,20 +23,10 @@ export default function RootLayout() {
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
     ...FontAwesome.font,
   });
-  const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
     if (error) throw error;
   }, [error]);
-
-  useEffect(() => {
-    const checkLoginStatus = async () => {
-      const loggedIn = await AsyncStorage.getItem('isLoggedIn');
-      console.log('Login status:', loggedIn); // Debug log
-      setIsLoggedIn(loggedIn === 'true');
-    };
-    checkLoginStatus();
-  }, []);
 
   useEffect(() => {
     if (loaded) {
@@ -44,35 +34,47 @@ export default function RootLayout() {
     }
   }, [loaded]);
 
-  if (!loaded || isLoggedIn === null) {
-    return null; // Show nothing while checking login status
+  if (!loaded) {
+    return null; // Show nothing while fonts are loading
   }
 
-  return <RootLayoutNav isLoggedIn={isLoggedIn} />;
+  return (
+    <AuthProvider>
+      <RootLayoutNav />
+    </AuthProvider>
+  );
 }
 
-interface RootLayoutNavProps {
-  isLoggedIn: boolean;
-}
-
-function RootLayoutNav({ isLoggedIn }: RootLayoutNavProps) {
+function RootLayoutNav() {
   const colorScheme = useColorScheme();
+  const { authState } = useAuth(); // Access authentication state from AuthContext
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack>
-        {!isLoggedIn ? (
+        {!authState?.authenticated ? (
           <Stack.Screen name="LoginScreen" options={{ headerShown: false }} />
         ) : (
-          <Stack.Screen name="(tabs)" options={{ headerShown: false}} />
+          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         )}
         <Stack.Screen name="ArticleLinksScreen" options={{ title: 'Article Links' }} />
         <Stack.Screen name="QuizScreen" options={{ title: 'Quiz' }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
       </Stack>
     </ThemeProvider>
   );
-} 
+}
+  
+
+
+
+
+
+
+
+
+
+
+
 
 
 

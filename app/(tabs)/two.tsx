@@ -1,185 +1,147 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View, Text } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, Button } from 'react-native';
+import * as Network from 'expo-network';
+import * as Device from 'expo-device';
+import * as Location from 'expo-location';
+import * as LocalAuthentication from 'expo-local-authentication';
+import { useCameraPermissions } from 'expo-camera';
 
-// Function to check the password strength
-function checkPasswordStrength(password: string) {
-  let strength = 0;
-  if (password.length >= 8) strength += 1; // Minimum length
-  if (/[A-Z]/.test(password)) strength += 1; // Uppercase letter
-  if (/[0-9]/.test(password)) strength += 1; // Number
-  if (/[@$!%*?&#]/.test(password)) strength += 1; // Special character
+export default function CyberScoreScreen() {
+  const [cyberScore, setCyberScore] = useState(100); // Start with a high score
+  const [networkType, setNetworkType] = useState<Network.NetworkStateType | null>(null);
+  const [wifiSecurity, setWifiSecurity] = useState<string>('Unknown');
+  const [permissionIssues, setPermissionIssues] = useState<string[]>([]);
+  const [deviceSecurity, setDeviceSecurity] = useState(true); // Assume secure unless rooted
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [biometricAvailable, setBiometricAvailable] = useState(false);
 
-  switch (strength) {
-    case 0:
-    case 1:
-      return 'Weak';
-    case 2:
-      return 'Medium';
-    case 3:
-    case 4:
-      return 'Strong';
-    default:
-      return 'Weak';
-  }
-}
+  useEffect(() => {
+    calculateCyberScore();
+  }, []);
 
-// Function to generate a random password with letters, numbers, and special characters
-function generatePassword(length = 12) {
-  const uppercase = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  const lowercase = 'abcdefghijklmnopqrstuvwxyz';
-  const numbers = '0123456789';
-  const specialChars = '@$!%*?&#';
-  const allCharacters = uppercase + lowercase + numbers + specialChars;
+  const calculateCyberScore = async () => {
+    let score = 100;
+    let issues: string[] = [];
 
-  let password = '';
-  
-  // Ensure at least one character from each category is included
-  password += uppercase[Math.floor(Math.random() * uppercase.length)];
-  password += lowercase[Math.floor(Math.random() * lowercase.length)];
-  password += numbers[Math.floor(Math.random() * numbers.length)];
-  password += specialChars[Math.floor(Math.random() * specialChars.length)];
-
-  // Fill the remaining length with random characters from the full set
-  for (let i = 4; i < length; i++) {
-    const randomIndex = Math.floor(Math.random() * allCharacters.length);
-    password += allCharacters[randomIndex];
-  }
-
-  // Shuffle the password to ensure randomness
-  password = password.split('').sort(() => 0.5 - Math.random()).join('');
-  
-  return password;
-}
-
-export default function TabTwoScreen() {
-  const [password, setPassword] = useState('');
-  const [passwordStrength, setPasswordStrength] = useState('');
-  const [generatedPassword, setGeneratedPassword] = useState('');
-
-  const handlePasswordChange = (text: string) => {
-    setPassword(text);
-    setPasswordStrength(checkPasswordStrength(text));
-  };
-
-  const handleGeneratePassword = () => {
-    const newPassword = generatePassword();
-    setGeneratedPassword(newPassword);
-    setPassword(newPassword);
-    setPasswordStrength(checkPasswordStrength(newPassword));
-  };
-
-  // Define strength colors
-  const getStrengthColor = () => {
-    switch (passwordStrength) {
-      case 'Weak':
-        return 'red';
-      case 'Medium':
-        return 'yellow';
-      case 'Strong':
-        return 'green';
-      default:
-        return 'white';
+    // Network Security Check
+    const networkInfo = await Network.getNetworkStateAsync();
+    if (networkInfo.type && networkInfo.type !== Network.NetworkStateType.WIFI) {
+      score -= 20; // Penalize if not on WiFi
+      issues.push("Not on WiFi");
     }
+    setNetworkType(networkInfo.type || null); // Set networkType, default to null if undefined
+
+    // Estimate WiFi Encryption Type Based on Connection Type
+    if (networkInfo.type === Network.NetworkStateType.WIFI) {
+      setWifiSecurity("Secured"); // Assumed secure
+    } else {
+      setWifiSecurity("Not Applicable"); // Not WiFi, encryption is irrelevant
+    }
+
+    // Device Security Check (e.g., if the device is rooted)
+    if (Device.isRootedExperimentalAsync) {
+      const isRooted = await Device.isRootedExperimentalAsync();
+      if (isRooted) {
+        score -= 30; // Penalize for rooted devices
+        issues.push("Device is Rooted");
+        setDeviceSecurity(false);
+      }
+    }
+
+    const hasHardware = await LocalAuthentication.hasHardwareAsync();
+    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+    if (!isEnrolled) {
+      score -= 10;
+      issues.push("Biometric authentication not enabled");
+    }
+    setBiometricAvailable(hasHardware && isEnrolled);
+
+    // Camera Permission Check
+    if (cameraPermission?.status !== 'granted') {
+      await requestCameraPermission();
+    }
+    if (cameraPermission?.status === 'granted') {
+      score -= 10;
+      issues.push("Camera Permission Granted");
+    }
+
+    // Location Permission Check
+    const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
+    if (locationStatus === 'granted') {
+      score -= 10;
+      issues.push("Location Permission Granted");
+    }
+
+    setPermissionIssues(issues);
+    setCyberScore(score);
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.heading}>Tools</Text>
-
-      {/* Password Strength Checker Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Password Strength Checker</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Enter password"
-          value={password}
-          onChangeText={handlePasswordChange}
-          secureTextEntry={true}
-          placeholderTextColor="#aaa"
-        />
-        <Text style={[styles.strength, { color: getStrengthColor() }]}>
-          Strength: {passwordStrength}
+    <View style={styles.container}>
+      <Text style={styles.title}>Cyber Score</Text>
+      <Text style={styles.score}>Score: {cyberScore}</Text>
+      <View style={styles.infoContainer}>
+        <Text style={[styles.info, networkType !== Network.NetworkStateType.WIFI && styles.issue]}>
+          Network Type: {networkType ?? 'Unknown'}
         </Text>
+        <Text style={[styles.info, wifiSecurity === 'Not Applicable' ? null : styles.issue]}>
+          WiFi Security: {wifiSecurity}
+        </Text>
+        <Text style={[styles.info, !deviceSecurity && styles.issue]}>
+          Device Security: {deviceSecurity ? 'Secure' : 'Rooted'}
+        </Text>
+        <Text style={styles.info}>Permissions:</Text>
+        {permissionIssues.length === 0 ? (
+          <Text style={styles.info}>All permissions are safe</Text>
+        ) : (
+          permissionIssues.map((issue, index) => (
+            <Text key={index} style={styles.issue}>
+              {issue}
+            </Text>
+          ))
+        )}
       </View>
-
-      {/* Password Generator Section */}
-      <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Password Generator</Text>
-        <TouchableOpacity style={styles.button} onPress={handleGeneratePassword}>
-          <Text style={styles.buttonText}>Generate Password</Text>
-        </TouchableOpacity>
-        {generatedPassword ? (
-          <View>
-            <Text style={styles.generatedPasswordTitle}>Generated Password:</Text>
-            <Text style={styles.generatedPassword}>{generatedPassword}</Text>
-          </View>
-        ) : null}
-      </View>
-    </SafeAreaView>
+      <Button title="Recalculate" onPress={calculateCyberScore} />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#E7DDFF',
   },
-  heading: {
-    fontSize: 28,
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 30,
-  },
-  section: {
-    marginBottom: 40,
-    backgroundColor: '#E9ECEF', // Light background color for the section
-    padding: 20,
-    borderRadius: 10,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#2A9D8F', // Section title color
     marginBottom: 20,
   },
-  input: {
-    height: 50,
-    borderColor: 'gray',
-    borderWidth: 1,
-    paddingHorizontal: 10,
-    borderRadius: 10,
-    backgroundColor: '#FFF',
-    marginBottom: 10,
-  },
-  strength: {
-    fontSize: 16,
+  score: {
+    fontSize: 48,
     fontWeight: 'bold',
+    color: '#ff6347',
+    marginBottom: 20,
   },
-  button: {
-    backgroundColor: '#2A9D8F',
-    paddingVertical: 12,
-    paddingHorizontal: 25,
-    borderRadius: 10,
-    alignItems: 'center',
+  infoContainer: {
+    marginVertical: 20,
   },
-  buttonText: {
-    fontSize: 16,
-    color: '#FFF',
+  info: {
+    fontSize: 18,
+    marginVertical: 5,
+  },
+  issue: {
+    fontSize: 18,
+    color: 'red',
     fontWeight: 'bold',
-  },
-  generatedPasswordTitle: {
-    fontSize: 16,
-    marginTop: 20,
-    color: '#333',
-  },
-  generatedPassword: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#2A9D8F',
-    marginTop: 10,
-    textAlign: 'center',
   },
 });
+
+
+
+
+
+
+
 
