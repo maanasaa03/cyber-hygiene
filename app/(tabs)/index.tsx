@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -11,11 +11,12 @@ export default function HomeScreen() {
   const [lastAccessedTitle, setLastAccessedTitle] = useState<string | null>(null);
 
   const modules = [
-    { title: 'Introduction to Cyber Hygiene', lessons: '3 Lessons', moduleKey: 'introtocyber' },
-    { title: 'Safe Use of Public Wi-Fi', lessons: '2 Lessons', moduleKey: 'publicwifi' },
-    { title: 'Phishing', lessons: '4 Lessons', moduleKey: 'phishing' },
-    { title: 'Secure Browsing', lessons: '3 Lessons', moduleKey: 'securebrowsing' },
-    { title: 'Authentication and Access Control', lessons: '3 Lessons', moduleKey: 'authandaccess' },
+    { title: 'Introduction to Cyber Hygiene', lessons: '7 Lessons', moduleKey: 'introtocyber' },
+    { title: 'Safe Use of Public Wi-Fi', lessons: '6 Lessons', moduleKey: 'publicwifi' },
+    { title: 'Phishing', lessons: '8 Lessons', moduleKey: 'phishing' },
+    { title: 'Secure Browsing', lessons: '8 Lessons', moduleKey: 'securebrowsing' },
+    { title: 'Authentication and Access Control', lessons: '7 Lessons', moduleKey: 'authandaccess' },
+    { title: 'Data Encryption', lessons: '4 Lessons', moduleKey: 'dataencrypt' },
   ];
 
   const getLastAccessedModule = async () => {
@@ -37,7 +38,7 @@ export default function HomeScreen() {
     getLastAccessedModule();
   }, []);
 
-  const handleModulePress = async (module: { title: string|null; moduleKey: string }) => {
+  const handleModulePress = async (module: { title: string | null; moduleKey: string }) => {
     try {
       await AsyncStorage.setItem('lastAccessedModule', module.moduleKey);
       setLastAccessedModule(module.moduleKey);
@@ -66,12 +67,11 @@ export default function HomeScreen() {
           </Text>
         </View>
 
-        {/* Take Questionnaire Button */}
         <TouchableOpacity 
           style={styles.questionnaireButton} 
           onPress={() => router.push('/QuestionnaireScreen')}
         >
-          <Text style={styles.questionnaireButtonText}>Test your cyber awareness</Text>
+          <Text style={styles.questionnaireButtonText}>Take Questionnaire</Text>
         </TouchableOpacity>
 
         <View style={styles.lessonContainer}>
@@ -85,7 +85,6 @@ export default function HomeScreen() {
             <Text style={styles.lessonTitle}>No module accessed yet</Text>
           )}
         </View>
-
 
         <View style={styles.modulesHeader}>
           <Text style={styles.sectionTitle}>Modules</Text>
@@ -123,10 +122,24 @@ export default function HomeScreen() {
             </ScrollView>
           </View>
         )}
+
+        <TouchableOpacity onPress={() => router.push('/QuizScreen')}> 
+          <View style={styles.quizHeadingContainer}>
+            <Text style={styles.quizHeading}>Ready to test your knowledge?</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={styles.quizButton} 
+          onPress={() => router.push('/QuizScreen')}
+        >
+          <Text style={styles.quizButtonText}>Start Quiz</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {

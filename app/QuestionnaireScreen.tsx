@@ -213,63 +213,60 @@ export default function QuestionnaireScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flexGrow: 1,
-    padding: 20,
-    backgroundColor: '#F3E5F5', // light purple background for the screen
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-    textAlign: 'center',
-    color: '#4A148C', // deep purple
-  },
-  questionContainer: {
-    marginBottom: 25,
-    padding: 15,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  questionText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#4A148C', // deep purple for question text
-    marginBottom: 10,
-  },
-  optionButton: {
-    backgroundColor: '#E1BEE7', // light purple background for options
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    borderRadius: 5,
-    marginBottom: 8,
-  },
-  selectedOption: {
-    backgroundColor: '#7B1FA2', // darker purple for selected option
-  },
-  optionText: {
-    fontSize: 16,
-    color: '#4A148C', // deep purple text color for options
-  },
-  submitButton: {
-    backgroundColor: '#4A148C', // deep purple button color
-    paddingVertical: 15,
-    borderRadius: 8,
-    alignItems: 'center',
-    marginTop: 20,
-  },
-  submitButtonText: {
-    color: 'white',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-});
-
-
-
-
+    container: {
+      flexGrow: 1,
+      padding: 15,  // Reduced padding for smaller layout
+      backgroundColor: '#F3E5F5', // light purple background for the screen
+    },
+    title: {
+      fontSize: 20,  // Reduced font size for title
+      fontWeight: 'bold',
+      marginBottom: 15,  // Reduced bottom margin
+      textAlign: 'center',
+      color: '#4A148C', // deep purple
+    },
+    questionContainer: {
+      marginBottom: 20,  // Reduced bottom margin
+      padding: 12,  // Reduced padding
+      backgroundColor: '#FFFFFF',
+      borderRadius: 8,
+      shadowColor: '#000',
+      shadowOpacity: 0.15,  // Slightly reduced shadow opacity
+      shadowOffset: { width: 0, height: 2 },
+      shadowRadius: 3,  // Slightly reduced shadow radius
+      elevation: 2,  // Reduced elevation for smaller shadow
+    },
+    questionText: {
+      fontSize: 16,  // Reduced font size for question text
+      fontWeight: 'bold',
+      color: '#4A148C', // deep purple for question text
+      marginBottom: 8,  // Reduced margin for spacing
+    },
+    optionButton: {
+      backgroundColor: '#E1BEE7', // light purple background for options
+      paddingVertical: 8,  // Reduced padding for smaller buttons
+      paddingHorizontal: 12,  // Reduced horizontal padding
+      borderRadius: 5,
+      marginBottom: 6,  // Reduced margin between options
+    },
+    selectedOption: {
+      backgroundColor: '#7B1FA2', // darker purple for selected option
+    },
+    optionText: {
+      fontSize: 14,  // Reduced font size for option text
+      color: '#4A148C', // deep purple text color for options
+    },
+    submitButton: {
+      backgroundColor: '#4A148C', // deep purple button color
+      paddingVertical: 12,  // Reduced padding for the submit button
+      borderRadius: 8,
+      alignItems: 'center',
+      marginTop: 15,  // Reduced margin top
+    },
+    submitButtonText: {
+      color: 'white',
+      fontSize: 16,  // Reduced font size for submit button text
+      fontWeight: 'bold',
+    },
+  });
+  

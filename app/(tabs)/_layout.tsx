@@ -1,7 +1,7 @@
 import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { Tabs } from 'expo-router';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, ScrollView } from 'react-native';
 
 import Colors from '@/constants/Colors';
 import { useColorScheme } from '@/components/useColorScheme';
@@ -19,8 +19,7 @@ export default function TabLayout() {
   const { onLogout } = useAuth();
 
   return (
-    <View style={styles.container}>
-      {/* Custom Header */}
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
       <View style={styles.header}>
         <Text style={styles.headerText}>Cyber Hygiene</Text>
         <Pressable style={styles.signOutButton} onPress={onLogout}>
@@ -28,33 +27,37 @@ export default function TabLayout() {
         </Pressable>
       </View>
 
-      {/* Tabs */}
-      <Tabs
-        screenOptions={{
-          tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-          headerShown: false, // Keep native header hidden
-        }}
-      >
-        <Tabs.Screen
-          name="index"
-          options={{
-            title: 'Home',
-            tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+      <View style={styles.container}>
+        <Tabs
+          screenOptions={{
+            tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+            headerShown: false, // Keep native header hidden
           }}
-        />
-        <Tabs.Screen
-          name="two"
-          options={{
-            title: 'Tools',
-            tabBarIcon: ({ color }) => <TabBarIcon name="wrench" color={color} />,
-          }}
-        />
-      </Tabs>
-    </View>
+        >
+          <Tabs.Screen
+            name="index"
+            options={{
+              title: 'Home',
+              tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
+            }}
+          />
+          <Tabs.Screen
+            name="two"
+            options={{
+              title: 'Tools',
+              tabBarIcon: ({ color }) => <TabBarIcon name="wrench" color={color} />,
+            }}
+          />
+        </Tabs>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
+  scrollContainer: {
+    flexGrow: 1,
+  },
   container: {
     flex: 1,
   },
@@ -63,9 +66,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingVertical: 15, // Increased padding to create more space for the button
-    backgroundColor: '#8A2BE2', // Purple background for header
-    elevation: 4, // Optional: adds a slight shadow for a more prominent header
+    paddingVertical: 15,
+    backgroundColor: '#8A2BE2',
+    elevation: 4,
   },
   headerText: {
     color: '#FFFFFF',
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    marginTop: 10, // Adds space below the text
+    marginTop: 10,
   },
   signOutText: {
     color: '#8A2BE2',
@@ -85,5 +88,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 });
+
 
 
