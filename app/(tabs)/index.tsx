@@ -66,6 +66,14 @@ export default function HomeScreen() {
           </Text>
         </View>
 
+        {/* Take Questionnaire Button */}
+        <TouchableOpacity 
+          style={styles.questionnaireButton} 
+          onPress={() => router.push('/QuestionnaireScreen')}
+        >
+          <Text style={styles.questionnaireButtonText}>Test your cyber awareness</Text>
+        </TouchableOpacity>
+
         <View style={styles.lessonContainer}>
           <Text style={styles.sectionTitle}>Where were we?</Text>
           {lastAccessedModule ? (
@@ -77,6 +85,7 @@ export default function HomeScreen() {
             <Text style={styles.lessonTitle}>No module accessed yet</Text>
           )}
         </View>
+
 
         <View style={styles.modulesHeader}>
           <Text style={styles.sectionTitle}>Modules</Text>
@@ -114,19 +123,6 @@ export default function HomeScreen() {
             </ScrollView>
           </View>
         )}
-        <TouchableOpacity onPress={() => router.push('/QuizScreen')}>
-  <View style={styles.quizHeadingContainer}>
-    <Text style={styles.quizHeading}>Ready to test your knowledge?</Text>
-  </View>
-</TouchableOpacity>
-
-
-        <TouchableOpacity 
-          style={styles.quizButton} 
-          onPress={() => router.push('/QuizScreen')}
-        >
-          <Text style={styles.quizButtonText}>Start Quiz</Text>
-        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -275,7 +271,20 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#5E3CB2', // Dark purple for heading
     marginLeft: 10, // Align the heading to the left with some padding
-  }
-  
+  },
+  questionnaireButton: {
+    backgroundColor: '#8E24AA',
+    borderRadius: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    marginHorizontal: 16,
+    marginVertical: 20,
+  },
+  questionnaireButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
   
 });

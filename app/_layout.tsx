@@ -57,8 +57,9 @@ function RootLayoutNav() {
         ) : (
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         )}
-        <Stack.Screen name="ArticleLinksScreen" options={{ title: 'Article Links' }} />
-        <Stack.Screen name="QuizScreen" options={{ title: 'Quiz' }} />
+        <Stack.Screen name="ArticleLinksScreen" options={{ title: 'Resources' }} />
+        <Stack.Screen name="QuizScreen" options={{ title: 'Take Quiz!' }} />
+        <Stack.Screen name="QuestionnaireScreen" options={{ title: 'Test Your Cyber Awareness!' }} />
       </Stack>
     </ThemeProvider>
   );
