@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Alert,
+} from 'react-native';
 import * as Network from 'expo-network';
 import * as Device from 'expo-device';
 import * as Location from 'expo-location';
@@ -7,30 +13,25 @@ import * as LocalAuthentication from 'expo-local-authentication';
 import { useCameraPermissions } from 'expo-camera';
 
 export default function CyberScoreScreen() {
-  const [cyberScore, setCyberScore] = useState(100); // Start with a high score
+  const [cyberScore, setCyberScore] = useState(100);
+  const [scoreLabel, setScoreLabel] = useState('Excellent');
   const [networkType, setNetworkType] = useState<Network.NetworkStateType | null>(null);
-  const [wifiSecurity, setWifiSecurity] = useState<string>('Unknown');
+  const [wifiSecurity, setWifiSecurity] = useState('Unknown');
   const [permissionIssues, setPermissionIssues] = useState<string[]>([]);
-  const [deviceSecurity, setDeviceSecurity] = useState(true); // Assume secure unless rooted
+  const [deviceSecurity, setDeviceSecurity] = useState(true);
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const [biometricAvailable, setBiometricAvailable] = useState(false);
   const [showDetails, setShowDetails] = useState(false);
 
   useEffect(() => {
-    // Request both camera and location permissions on every load
     const requestPermissions = async () => {
-      await requestCameraPermission(); // Request camera permission
-  
-      const locationPermission = await Location.requestForegroundPermissionsAsync();
-      if (locationPermission.status !== 'granted') {
-        console.log('Location permission not granted');
-      }
+      await requestCameraPermission();
+      await Location.requestForegroundPermissionsAsync();
     };
-  
+
     requestPermissions();
-    calculateCyberScore(); // Call function to calculate cyber score after permissions are requested
+    calculateCyberScore();
   }, []);
-   // Re-run if camera permission changes
 
   const calculateCyberScore = async () => {
     let score = 100;
@@ -39,79 +40,115 @@ export default function CyberScoreScreen() {
     // Network Security Check
     const networkInfo = await Network.getNetworkStateAsync();
     if (networkInfo.type && networkInfo.type !== Network.NetworkStateType.WIFI) {
-      score -= 20; // Penalize if not on WiFi
-      issues.push("Not on WiFi");
+      score -= 20;
+      issues.push('Not connected to WiFi (may be less secure)');
     }
-    setNetworkType(networkInfo.type || null); // Set networkType, default to null if undefined
+    setNetworkType(networkInfo.type || null);
 
-    // Estimate WiFi Encryption Type Based on Connection Type
     if (networkInfo.type === Network.NetworkStateType.WIFI) {
-      setWifiSecurity("Secured"); // Assumed secure
+      setWifiSecurity('Secured');
     } else {
-      setWifiSecurity("Not Applicable"); // Not WiFi, encryption is irrelevant
+      setWifiSecurity('Not Applicable');
     }
 
-    // Device Security Check (e.g., if the device is rooted)
+    // Device Security Check
     if (Device.isRootedExperimentalAsync) {
       const isRooted = await Device.isRootedExperimentalAsync();
       if (isRooted) {
-        score -= 30; // Penalize for rooted devices
-        issues.push("Device is Rooted");
+        score -= 30;
+        issues.push('Device is rooted (security risk)');
         setDeviceSecurity(false);
       }
     }
 
+    // Biometric Authentication Check
     const hasHardware = await LocalAuthentication.hasHardwareAsync();
     const isEnrolled = await LocalAuthentication.isEnrolledAsync();
     if (!isEnrolled) {
       score -= 10;
-      issues.push("Biometric authentication not enabled");
+      issues.push('Biometric authentication not enabled');
     }
     setBiometricAvailable(hasHardware && isEnrolled);
 
     // Camera Permission Check
     if (cameraPermission?.status === 'granted') {
       score -= 10;
-      issues.push("Camera Permission Granted");
+      issues.push('Camera permission granted');
     }
 
     // Location Permission Check
     const { status: locationStatus } = await Location.requestForegroundPermissionsAsync();
     if (locationStatus === 'granted') {
       score -= 10;
-      issues.push("Location Permission Granted");
+      issues.push('Location permission granted');
     }
 
+    // Set score and label
     setPermissionIssues(issues);
     setCyberScore(score);
+    if (score >= 80) setScoreLabel('Excellent');
+    else if (score >= 60) setScoreLabel('Good');
+    else if (score >= 40) setScoreLabel('Average');
+    else setScoreLabel('Poor');
   };
 
   const toggleDetails = () => {
     setShowDetails(!showDetails);
   };
 
+  const showExplanation = (category: string) => {
+    const explanations: Record<string, string> = {
+      'WiFi Security': 'WiFi encryption protects your data from being intercepted on public networks.',
+      'Device Security': 'A rooted device is more vulnerable to malware and unauthorized access.',
+      Permissions: 'Granting permissions like camera or location can expose sensitive data.',
+    };
+    Alert.alert(category, explanations[category] || 'No explanation available.');
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.scoreContainer}>
-        <Text style={styles.title}>Cyber Score</Text>
+        <View style={styles.titleContainer}>
+          <Text style={styles.title}>Cyber Score</Text>
+          <TouchableOpacity
+            style={styles.infoButton}
+            onPress={() =>
+              Alert.alert(
+                'What is Cyber Score?',
+                'Your Cyber Score represents the security posture of your device. A higher score indicates better security. You can click on each individual parameter to learn what it means and how it impacts your security.'
+              )
+            }
+          >
+            <Text style={styles.infoIcon}>ℹ️</Text>
+          </TouchableOpacity>
+        </View>
         <View style={styles.separator} />
 
         <View style={styles.score}>
           <Text style={styles.scoreText}>{cyberScore}</Text>
+          <Text style={styles.labelText}>{scoreLabel}</Text>
         </View>
 
         {showDetails && (
           <View style={styles.infoContainer}>
-            <Text style={[styles.info, networkType !== Network.NetworkStateType.WIFI && styles.issue]}>
-              Network Type: {networkType ?? 'Unknown'}
-            </Text>
-            <Text style={[styles.info, wifiSecurity === 'Not Applicable' ? null : styles.issue]}>
-              WiFi Security: {wifiSecurity}
-            </Text>
-            <Text style={[styles.info, !deviceSecurity && styles.issue]}>
-              Device Security: {deviceSecurity ? 'Secure' : 'Rooted'}
-            </Text>
-            <Text style={styles.info}>Permissions:</Text>
+            <TouchableOpacity onPress={() => showExplanation('WiFi Security')}>
+              <Text style={[styles.info, networkType !== Network.NetworkStateType.WIFI && styles.issue]}>
+                Network Type: {networkType ?? 'Unknown'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => showExplanation('WiFi Security')}>
+              <Text style={[styles.info, wifiSecurity === 'Not Applicable' ? null : styles.issue]}>
+                WiFi Security: {wifiSecurity}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => showExplanation('Device Security')}>
+              <Text style={[styles.info, !deviceSecurity && styles.issue]}>
+                Device Security: {deviceSecurity ? 'Secure' : 'Rooted'}
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={() => showExplanation('Permissions')}>
+              <Text style={styles.info}>Permissions:</Text>
+            </TouchableOpacity>
             {permissionIssues.length === 0 ? (
               <Text style={styles.info}>All permissions are safe</Text>
             ) : (
@@ -135,7 +172,6 @@ export default function CyberScoreScreen() {
             {showDetails ? 'Show Less' : 'Show More'}
           </Text>
         </TouchableOpacity>
-
       </View>
     </View>
   );
@@ -147,27 +183,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     padding: 20,
-    backgroundColor: '#E7DDFF', // Light grey background for the screen
+    backgroundColor: '#E7DDFF',
   },
   scoreContainer: {
-    width: '90%', // Reduce width to make it smaller
-    maxWidth: 350, // Set a max width for a more compact design
-    padding: 16, // Reduced padding for a smaller container
-    backgroundColor: '#FFFFFF', // White background for the score container
+    width: '90%',
+    maxWidth: 350,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
     borderRadius: 12,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
-    elevation: 5, // Add a slight shadow effect
-    alignItems: 'center', // Center contents
+    elevation: 5,
+    alignItems: 'center',
+  },
+  titleContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 10,
   },
   title: {
-    fontSize: 24, // Smaller title font size
+    fontSize: 24,
     fontWeight: 'bold',
-    color: '#8A2BE2', // Purple text color for title
-    marginBottom: 10, // Gap between title and score circle
-    textAlign: 'center',
+    color: '#8A2BE2',
+  },
+  infoButton: {
+    marginLeft: 8,
+    padding: 4,
+  },
+  infoIcon: {
+    fontSize: 18,
+    color: '#8A2BE2',
   },
   separator: {
     width: '80%',
@@ -176,46 +224,53 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   score: {
-    width: 120, // Circle size
+    width: 120,
     height: 120,
-    borderRadius: 60, // Make it a circle
-    backgroundColor: '#8A2BE2', // Purple background for the circle
+    borderRadius: 60,
+    backgroundColor: '#8A2BE2',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 20,
+    marginBottom: 10,
   },
   scoreText: {
-    fontSize: 32, // Larger number inside the circle
+    fontSize: 36,
     fontWeight: 'bold',
-    color: '#FFFFFF', // White color for the score
+    color: '#FFFFFF',
+  },
+  labelText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+    marginTop: 4,
   },
   infoContainer: {
     marginVertical: 16,
+    width: '100%',
   },
   info: {
-    fontSize: 16, // Uniform font size for all text
-    color: '#333', // Dark color for regular info
+    fontSize: 16,
+    color: '#333',
     marginVertical: 5,
     textAlign: 'center',
   },
   issue: {
-    fontSize: 16, // Same font size for issues
-    color: '#D32F2F', // Red color for issues
+    fontSize: 16,
+    color: '#D32F2F',
     fontWeight: 'bold',
     textAlign: 'center',
   },
   buttonContainer: {
     marginTop: 20,
-    alignItems: 'center', // Center the button horizontally
+    alignItems: 'center',
   },
   recalculateButton: {
-    backgroundColor: '#8A2BE2', // Purple button
+    backgroundColor: '#8A2BE2',
     paddingVertical: 12,
     paddingHorizontal: 40,
-    borderRadius: 25, // Rounded corners
-    marginTop: 10,
+    borderRadius: 25,
   },
   buttonText: {
+    fontSize: 16,
     color: '#FFFFFF',
     fontWeight: 'bold',
   },
@@ -226,13 +281,16 @@ const styles = StyleSheet.create({
     borderRadius: 25,
   },
   showMoreText: {
-    color: '#000000', // No color for the "show more" button text
+    fontSize: 14,
+    color: '#8A2BE2',
     fontWeight: 'bold',
   },
   underlinedText: {
-    textDecorationLine: 'underline', // Adds the underline to the text when clicked
+    textDecorationLine: 'underline',
   },
 });
+
+
 
 
 
