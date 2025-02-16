@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-nati
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useNavigation } from '@react-navigation/native';
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -136,6 +138,13 @@ export default function HomeScreen() {
           <Text style={styles.quizButtonText}>Start Quiz</Text>
         </TouchableOpacity>
       </ScrollView>
+      <TouchableOpacity 
+      style={styles.chatbotButton} 
+      onPress={() => router.push('/ChatbotScreen')}
+        >
+      <MaterialIcons name="chat" size={36} color="#fff" />
+      </TouchableOpacity>
+
     </SafeAreaView>
   );
 }
@@ -147,6 +156,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#E6E0FF', // Light purple background for container
     padding: 20,
   },
+  chatbotButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
+    backgroundColor: '#5E3CB2',
+    padding: 18,  // Increased padding for a bigger button
+    borderRadius: 40,  // Increased radius for a larger circular button
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3.5,
+  },
+  
   greetingContainer: {
     marginTop: 10, // Adjusted for spacing near the header
   },

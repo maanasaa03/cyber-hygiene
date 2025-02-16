@@ -57,9 +57,14 @@ function RootLayoutNav() {
         ) : (
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         )}
-        <Stack.Screen name="ArticleLinksScreen" options={{ title: 'Resources' }} />
-        <Stack.Screen name="QuizScreen" options={{ title: 'Take Quiz!' }} />
-        <Stack.Screen name="QuestionnaireScreen" options={{ title: 'Test Your Cyber Awareness!' }} />
+        <Stack.Screen name="ArticleLinksScreen" options={{ title: 'Resources',headerStyle: {
+      backgroundColor: '#9C4DCC' }}} />
+        <Stack.Screen name="QuizScreen" options={{ title: 'Take Quiz!', headerStyle: {
+      backgroundColor: '#9C4DCC' } }} />
+        <Stack.Screen name="QuestionnaireScreen" options={{ title: 'Test Your Cyber Awareness!', headerStyle: {
+      backgroundColor: '#9C4DCC' } }} />
+        <Stack.Screen name="ChatbotScreen" options={{ title: 'Welcome to CHAI!',headerStyle: {
+      backgroundColor: '#9C4DCC' }}} />
       </Stack>
     </ThemeProvider>
   );

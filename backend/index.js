@@ -1,17 +1,18 @@
-
-// index.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -82,6 +83,27 @@ app.post('/verify-token', verifyToken, (req, res) => {
   res.status(200).json({ isValid: true });
 });
 
+// Chatbot Endpoint (Gemini API)
+app.post('/chatbot', async (req, res) => {
+  const { message } = req.body;
+
+  if (!message) {
+    return res.status(400).json({ error: 'Message is required' });
+  }
+
+  try {
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const result = await model.generateContent(message);
+    const response = result.response.text();
+
+    res.json({ reply: response });
+  } catch (error) {
+    console.error('Gemini API Error:', error);
+    res.status(500).json({ error: 'Failed to fetch response from chatbot' });
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
