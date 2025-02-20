@@ -2,6 +2,7 @@ package com.yourname.permissionviewer
 
 import android.app.Application
 import android.content.res.Configuration
+
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactNativeHost
@@ -10,11 +11,9 @@ import com.facebook.react.ReactHost
 import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint.load
 import com.facebook.react.defaults.DefaultReactNativeHost
 import com.facebook.soloader.SoLoader
+
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ReactNativeHostWrapper
-
-// Import your custom package
-import com.yourname.permissionviewer.AppPermissionsPackage
 
 class MainApplication : Application(), ReactApplication {
 
@@ -22,13 +21,9 @@ class MainApplication : Application(), ReactApplication {
         this,
         object : DefaultReactNativeHost(this) {
           override fun getPackages(): List<ReactPackage> {
-            // Get the auto-linked packages
-            val packages = PackageList(this).packages.toMutableList()
-            
-            // Add the custom AppPermissionsPackage
-            packages.add(AppPermissionsPackage())
-
-            return packages
+            // Packages that cannot be autolinked yet can be added manually here, for example:
+            // packages.add(new MyReactNativePackage());
+            return PackageList(this).packages
           }
 
           override fun getJSMainModuleName(): String = ".expo/.virtual-metro-entry"
@@ -58,4 +53,3 @@ class MainApplication : Application(), ReactApplication {
     ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig)
   }
 }
-

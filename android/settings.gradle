@@ -44,7 +44,7 @@ if (getRNMinorVersion() >= 75) {
   }
 }
 
-rootProject.name = 'PermissionViewer'
+rootProject.name = 'capstone2'
 
 dependencyResolutionManagement {
   versionCatalogs {
