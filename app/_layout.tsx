@@ -65,6 +65,8 @@ function RootLayoutNav() {
       backgroundColor: '#9C4DCC' } }} />
         <Stack.Screen name="ChatbotScreen" options={{ title: 'Welcome to CHAI!',headerStyle: {
       backgroundColor: '#9C4DCC' }}} />
+      <Stack.Screen name="BrowserScreen" options={{ title: 'Browser',headerStyle: {
+      backgroundColor: '#9C4DCC' }}} />
       </Stack>
     </ThemeProvider>
   );

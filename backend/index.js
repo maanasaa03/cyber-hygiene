@@ -158,6 +158,20 @@ app.post('/analyze', async (req, res) => {
       console.warn('WHOIS API Error:', error.response?.data || error.message);
     }
 
+    const riskKeywords = [
+      "scam", "phishing", "malware", "unsafe", "low credibility",
+      "spelling errors", "poor readability", "grammar errors",
+      "fake", "unverified", "fraud", "suspicious","not secure","does not have an SSL certificate"
+    ];
+    let aiRiskDetected = riskKeywords.some(keyword => aiAnalysis.includes(keyword));
+    
+    if (aiRiskDetected) {
+      securityScore -= 30; // Reduce score further if AI detects risks
+    }
+
+    // Prevent negative scores
+    securityScore = Math.max(securityScore, 0);
+
     res.json({ securityScore, analysis: aiAnalysis });
   } catch (error) {
     console.error('Website Analysis Error:', error.response?.data || error.message);
@@ -168,5 +182,6 @@ app.post('/analyze', async (req, res) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
 
 

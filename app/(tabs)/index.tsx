@@ -139,11 +139,19 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </ScrollView>
       <TouchableOpacity 
-      style={styles.chatbotButton} 
-      onPress={() => router.push('/ChatbotScreen')}
-        >
-      <MaterialIcons name="chat" size={36} color="#fff" />
-      </TouchableOpacity>
+  style={styles.chatbotButton} 
+  onPress={() => router.push('/ChatbotScreen')}
+>
+  <MaterialIcons name="chat" size={36} color="#fff" />
+</TouchableOpacity>
+
+<TouchableOpacity 
+  style={styles.browserButton} 
+  onPress={() => router.push('/BrowserScreen')}
+>
+  <MaterialIcons name="language" size={36} color="#fff" />
+</TouchableOpacity>
+
 
     </SafeAreaView>
   );
@@ -159,16 +167,31 @@ const styles = StyleSheet.create({
   chatbotButton: {
     position: 'absolute',
     bottom: 30,
-    right: 20,
+    right: 20, // Keep chatbot on the far right
     backgroundColor: '#5E3CB2',
-    padding: 18,  // Increased padding for a bigger button
-    borderRadius: 40,  // Increased radius for a larger circular button
+    padding: 18,
+    borderRadius: 40,
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.3,
     shadowRadius: 3.5,
   },
+  
+  browserButton: {
+    position: 'absolute',
+    bottom: 30,
+    right: 100, // Increased spacing from chatbot
+    backgroundColor: '#5E3CB2',
+    padding: 18,
+    borderRadius: 40,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 3.5,
+  },
+  
   
   greetingContainer: {
     marginTop: 10, // Adjusted for spacing near the header
@@ -322,5 +345,4 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     textAlign: 'center',
   },
-  
 });
